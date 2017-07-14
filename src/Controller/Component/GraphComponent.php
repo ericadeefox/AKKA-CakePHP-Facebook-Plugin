@@ -1,7 +1,7 @@
 <?php
 /**
  * AkkaFacebook Graph Component
- * 
+ *
  * @author Andre Santiago
  * @copyright (c) 2015 akkaweb.com
  * @license MIT
@@ -30,119 +30,119 @@ class GraphComponent extends Component {
 
     /**
      * 	Facebook Redirect Login Helper
-     * 
+     *
      * @var type Object
      */
     public $FacebookHelper = null;
 
     /**
      * Facebook Access Token
-     * 
+     *
      * @var type String
      */
     public $FacebookAccessToken = null;
 
     /**
-     * Assigned Redirect Url 
-     * 
+     * Assigned Redirect Url
+     *
      * @var type String
      */
     public $FacebookRedirectUrl = null;
 
     /**
      * Facebook Request
-     * 
+     *
      * @var type Object
      */
     public $FacebookRequest = null;
 
     /**
      * Facebook Response
-     * 
+     *
      * @var type Object
      */
     public $FacebookResponse = null;
 
     /**
      * Facebook Graph Object
-     * 
+     *
      * @var type Object
      */
     public $FacebookGraphObject = null;
 
     /**
      * Facebook Graph User
-     * 
+     *
      * @var type Object
      */
     public $FacebookGraphUser = null;
 
     /**
      * Facebook Session
-     * 
+     *
      * @var type Object
      */
     public $FacebookSession = null;
 
     /**
      * Facebook User Full Name
-     * 
+     *
      * @var type String
      */
     public $FacebookName = null;
 
     /**
      * Facebook User First Name
-     * 
+     *
      * @var type String
      */
     public $FacebookFirstName = null;
 
     /**
      * Facebook User Last Name
-     * 
+     *
      * @var type String
      */
     public $FacebookLastName = null;
 
     /**
      * Facebook User Id
-     * 
+     *
      * @var type String
      */
     public $FacebookId = null;
 
     /**
      * Facebook User Email
-     * 
+     *
      * @var type String
      */
     public $FacebookEmail = null;
 
     /**
      * Component Configuration
-     * 
+     *
      * @var type Array
      */
     protected $_configs = null;
 
     /**
      * Application Users Model Object
-     * 
+     *
      * @var type Object
      */
     protected $Users = null;
 
     /**
      * Components Controller
-     * 
+     *
      * @var type Object
      */
     protected $Controller = null;
 
     /**
      * Application Components
-     * 
+     *
      * @var type Component
      */
     public $components = ['Flash', 'Auth'];
@@ -170,7 +170,7 @@ class GraphComponent extends Component {
 
     /**
      * Initialize Controllers, User Model and Session
-     * 
+     *
      * @param array $config
      */
     public function initialize(array $config)
@@ -208,6 +208,20 @@ class GraphComponent extends Component {
 	    ];
 	}
 
+    FacebookSession::setDefaultApplication($this->_configs['app_id'], $this->_configs['app_secret']);
+
+    $this->FacebookRedirectUrl = $this->_configs['redirect_url'];
+
+    $this->FacebookHelper = new FacebookRedirectLoginHelper($this->FacebookRedirectUrl);
+
+    /**
+     * prevent FBRLH from checking the session status during CLI
+     */
+    if (php_sapi_name() == 'cli')
+    {
+        $this->FacebookHelper->disableSessionStatusCheck();
+    }
+
 	/**
 	 * Initialize the Users Model class
 	 */
@@ -217,16 +231,11 @@ class GraphComponent extends Component {
 
     /**
      * Initialize Facebook, create Session, fire Request and get User Object
-     * 
+     *
      * @param \Cake\Event\Event $event
      */
     public function beforeFilter(Event $event)
     {
-	FacebookSession::setDefaultApplication($this->_configs['app_id'], $this->_configs['app_secret']);
-
-	$this->FacebookRedirectUrl = $this->_configs['redirect_url'];
-
-	$this->FacebookHelper = new FacebookRedirectLoginHelper($this->FacebookRedirectUrl);
 
 	try {
 	    $this->FacebookSession = $this->FacebookHelper->getSessionFromRedirect();
@@ -259,7 +268,7 @@ class GraphComponent extends Component {
 
     /**
      *  Component Startup
-     * 
+     *
      * @param \Cake\Event\Event $event
      */
     public function startup(Event $event)
@@ -339,8 +348,8 @@ class GraphComponent extends Component {
     }
 
     /**
-     *  Component Before Render 
-     * 
+     *  Component Before Render
+     *
      * @param \Cake\Event\Event $event
      */
     public function beforeRender(Event $event)
@@ -391,7 +400,7 @@ class GraphComponent extends Component {
 
     /**
      * Logs user in application after successful save
-     * 
+     *
      * @param type $result
      */
     protected function __autoLogin($result)
@@ -404,7 +413,7 @@ class GraphComponent extends Component {
 
     /**
      * Creates a new username
-     * 
+     *
      * @return type String
      */
     protected function __generateUsername()
@@ -420,7 +429,7 @@ class GraphComponent extends Component {
 
     /**
      * Generate a random password
-     * 
+     *
      * @return type String
      */
     protected function __randomPassword()
@@ -433,7 +442,7 @@ class GraphComponent extends Component {
 	    $n = rand(0, $alphaLength);
 	    $pass[] = $alphabet[$n];
 	}
-	return implode($pass); //turn the array into a string        
+	return implode($pass); //turn the array into a string
     }
 
     /**
